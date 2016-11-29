@@ -11,7 +11,6 @@ public class Parser {
 	Nodo sent=new Nodo(new Token(-1,"sentencias"));
 	boolean declaraciones=false;
 	Tabla tabla_de_simbolos  = new Tabla();	
-	Nodo current=root;
 	Scanner scanner; 
 	Boolean error=false;
 	Token tok=new Token(-1,"inicializar");
@@ -50,7 +49,6 @@ public class Parser {
 		}
 		while(tok.id==3&&!error){
 			varDeclaration();
-			current=root;
 			if(tok==null)
 				break;
 		}
@@ -58,8 +56,7 @@ public class Parser {
 		System.out.println("------------tabla de simbolos--------------");
 		System.out.println(tabla_de_simbolos);
 		while(tok!=null&&!error){
-			statement();
-			current=root;
+			sent.addNodo(statement());
 		}
 		
 		Mensajes.add("compilado finalizado");
@@ -78,46 +75,64 @@ public class Parser {
 		compare(pcom);
 		tabla_de_simbolos.addRenglon(tipo.getToken(), tipo.hojas.get(0).getToken());
 	}
-	public void statement(){
-		Nodo aux=current;
+	public Nodo statement(){
+		Nodo padre=null; 
+		Token t1=null,t2=null,t3=null;
+		Nodo nt1=null,nt2=null;
 		switch ( tok.id ) { 
 		case 9: 
+			t1=tok;
 			compare(id);
+			t2=tok;
 			compare(equ);
-			expresion();
-			compare(pcom); 
+			nt1=expresion();
+			compare(pcom);
+			padre=new Nodo(t2);
+			padre.addNodo(nt1);
+			padre.addNodo(new Nodo(t1));
+			
 		break; 
-		case 1: 
+		case 1:
+			t1=tok;
 			compare(IF);
 			compare(pa);
-			expresion();
+			nt1=expresion();
 			compare(pc);
-			statement();
+			nt2=statement();
+			padre = new Nodo(t1);
+			padre.addNodo(nt1);
+			padre.addNodo(nt2);
 		break; 
 		case 2:
+			t1=tok;
 			compare(WHILE);
 			compare(pa);
-			expresion();
+			nt1=expresion();
 			compare(pc);
-			statement();
+			nt2=statement();
+			padre = new Nodo(t1);
+			padre.addNodo(nt1);
+			padre.addNodo(nt2);
 		break;
 		default: error ();
-		}	
-		current=aux;
+			return null;
+		}
+		return padre;
 	}
-	public void expresion(){
+	public Nodo expresion(){
+		Nodo padre=null;
+		Token temp1=null,temp2= null,temp3=null;
 		if (tok==null||error)
-			return;
-		Nodo aux=current;
+			return null;
 		switch ( tok.id ) { 
 		case 9: 
-			Token temp1=tok;
+			temp1=tok;
 			compare(id);
 			if(tok.id==pcom||tok.id==pc)
-				return;
-			Token temp2=tok;
+				return new Nodo(temp1);
+			temp2=tok;
 			compare(mas);
-			Token temp3=tok;
+			temp3=tok;
 			compare(id); 
 			if (temp2.value.equals("+")&&(tabla_de_simbolos.getTipo(temp1).equals("Boolean")||tabla_de_simbolos.getTipo(temp3).equals("Boolean"))){
 				errorSemantico.add("no se puede hacer la suma de booleanos: "+temp1.value +"+"+temp3.value);
@@ -126,22 +141,18 @@ public class Parser {
 				if (!tabla_de_simbolos.match(temp1, temp3)){
 					errorSemantico.add("tipos de datos no compactibles: "+temp1.value +"+"+temp3.value);
 					System.out.println("tipos de datos no compactibles: "+temp1.value +"+"+temp3.value);
-				}
-					
+				}	
 		break; 
-		
 		default: error ();
 		}
-		current=aux;
+		padre = new Nodo(temp2);
+		padre.addNodo(new Nodo(temp1));
+		padre.addNodo(new Nodo(temp3));
+		return padre;
 	}
 	public void advance(){
 		if (tok==null)
 			return;
-		if (!(tok.id==pcom||tok.id==pa||tok.id==pc||tok.id==iv)){
-			Nodo n=new Nodo(tok);
-			current.addNodo(n); 
-			current = n;
-		}
 		tok =scanner.getToken();
 		System.out.println(tok);
 		
@@ -169,7 +180,7 @@ public class Parser {
 		error=true;
 	}
 	public static void main(String [] aa){
-		Parser p = new Parser("Int i; Boolean b1; Boolean b2; if(i==i)i=i; i=i==b1; ");
+		Parser p = new Parser("Int x; Int y; Int b; Int a; Int r;  if(x==y)x=x+b; r=a==b; ");
 		p.program();
 		for(int x=0;x<p.scanner.errors.size();x++)
 			System.out.println(p.scanner.errors.get(x));
@@ -177,6 +188,7 @@ public class Parser {
 			System.out.println(p.errors.get(x));
 		for(int x=0;x<p.Mensajes.size();x++)
 			System.out.println(p.Mensajes.get(x));
+		p.sent.recorrido();
 	}
 
 }
