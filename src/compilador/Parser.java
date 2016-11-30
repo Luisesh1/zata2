@@ -140,7 +140,7 @@ public class Parser {
 			}else
 				if (!tabla_de_simbolos.match(temp1, temp3)){
 					errorSemantico.add("tipos de datos no compactibles: "+temp1.value +"+"+temp3.value);
-					System.out.println("tipos de datos no compactibles: "+temp1.value +"+"+temp3.value);
+					System.out.println("tipos de datos no compactibles: "+temp1.value +temp2.value+temp3.value);
 				}	
 		break; 
 		default: error ();
@@ -180,7 +180,7 @@ public class Parser {
 		error=true;
 	}
 	public static void main(String [] aa){
-		Parser p = new Parser("Int x; Int y; Int b; Int a; Int r;  if(x==y)x=x+b; r=a==b; ");
+		Parser p = new Parser("Int x; Int y; Int b; Int a; Int r;  while(x==y)while(f)x=x+b; r=a==b;r=a==b; ");
 		p.program();
 		for(int x=0;x<p.scanner.errors.size();x++)
 			System.out.println(p.scanner.errors.get(x));
@@ -188,7 +188,7 @@ public class Parser {
 			System.out.println(p.errors.get(x));
 		for(int x=0;x<p.Mensajes.size();x++)
 			System.out.println(p.Mensajes.get(x));
-		p.sent.recorrido();
+		System.out.println(p.sent.getTriples());
 	}
 
 }

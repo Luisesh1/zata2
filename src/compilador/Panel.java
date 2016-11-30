@@ -133,6 +133,10 @@ public class Panel extends JPanel implements ActionListener
 				cat=cat+(p.errors.get(x)+"\n");
 			for(int x=0;x<p.Mensajes.size();x++)
 				cat=cat+(p.Mensajes.get(x)+"\n");
+			for(int x=0;x<p.errorSemantico.size();x++)
+				cat=cat+(p.errorSemantico.get(x)+"\n");
+			if (p.errorSemantico.size()==0)
+				cat=cat+p.sent.getTriples();
 			resultado.setText(cat);
 		}
 	}
