@@ -11,7 +11,7 @@ public class Tabla {
 		for (int x=0;x<lista.size();x++)
 			if (lista.get(x).declaracion.compareTo(t1.value)==0)
 				return lista.get(x).tipo;
-		return null;
+		return "fail";
 	}
 	public boolean match(Token v1,Token v2){
 		if (!exist(v1)||!exist(v2))

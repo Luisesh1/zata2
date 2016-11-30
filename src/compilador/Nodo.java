@@ -61,7 +61,7 @@ public class Nodo {
 		t1=n.getToken().value;
 		t2=n.hojas.get(0).getToken().value;
 		t3=n.hojas.get(1).getToken().value;
-		if (n.getToken().id==1){
+		if (n.getToken().id==1||n.getToken().id==2){
 			t1="jz";
 			t3="?";
 			if(!(n.hojas.get(0).getToken().id==9)){
